@@ -5,7 +5,10 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] private float speed = 5f;
+    [SerializeField] private float speed = 15f;
+    [SerializeField] private float rotateSpeed = 30f;
+
+    [SerializeField] DriveMode driveMode = DriveMode.Manual;
 
     [SerializeField] Transform nextTarget;
     [SerializeField] List<Transform> points;
@@ -28,6 +31,8 @@ public class PlayerController : MonoBehaviour
 
     private void LoadPoints()
     {
+        if (this.points.Count > 0)
+            this.points.Clear();
         var points = GameObject.Find("Points");
         foreach (Transform point in points.transform) 
         { 
@@ -43,10 +48,35 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        this.MoveOnPath();
+        this.Move();
     }
 
-    private void MoveOnPath()
+    void Move()
+    {
+        if (this.driveMode == DriveMode.Automatic)
+        {
+            this.AutoMoveOnPath();
+        }
+
+        else if (this.driveMode == DriveMode.Manual)
+        {
+            this.MoveByKeyboard();
+        }
+    }
+
+    private void MoveByKeyboard()
+    {
+        float horizontalInput = Input.GetAxis("Horizontal");
+        float verticalInput = Input.GetAxis("Vertical");
+
+        Vector3 pos = transform.position + transform.forward * verticalInput * speed * Time.deltaTime;
+   
+        transform.Rotate(Vector3.up, Time.deltaTime * rotateSpeed * horizontalInput);
+        transform.position = pos;
+
+    }
+
+    private void AutoMoveOnPath()
     {
         Vector3 target = new Vector3(this.nextTarget.position.x, transform.position.y, this.nextTarget.position.z);
         if (Vector3.Distance(transform.position, target) < 0.5)
