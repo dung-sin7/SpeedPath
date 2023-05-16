@@ -15,9 +15,9 @@ public class CameraFollow : MonoBehaviour
 
     private void FollowTarget()
     {
-        Vector3 localOffset = target.transform.up * 5f - target.transform.forward * 9f;
+        Vector3 localOffset = target.transform.up * 5f - target.transform.forward * 6f;
         transform.position = target.transform.position + localOffset;
-        var euler = target.rotation.eulerAngles;
-        transform.rotation = Quaternion.Euler(euler.x + 20, euler.y, euler.z);
+        Quaternion rot = Quaternion.LookRotation(target.transform.position - transform.position + new Vector3(0, 2 ,0), target.transform.up);
+        transform.rotation = rot;
     }
 }
